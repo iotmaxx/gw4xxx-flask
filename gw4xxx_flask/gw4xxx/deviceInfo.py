@@ -1,6 +1,7 @@
 from flask_restful import Resource, fields, marshal
 from gw4xxx_hal.gw4xxx import gw4xxx_eeprom
 from datetime import datetime
+from app import theApi
 
 class MyDateFormat(fields.Raw):
     def format(self, value):
@@ -24,17 +25,8 @@ boardData_fields = {
     "TimeOfTest"        : MyDateFormat,
 }
 
-mainBoardData_fields = boardData_fields.copy()
-mainBoardData_fields["MAC"] = fields.List(fields.Integer)
 
-expansionBoard_fields = boardData_fields.copy()
-expansionBoard_fields["OverlayName"] = fields.String
 
-info_fields = {
-    "device":       fields.String,
-    "Main":         fields.Nested(mainBoardData_fields),
-    'uri':          fields.Url('gw4xxx_deviceInfo')
-}
 
 theData0 = {
     "Product" : 0,
@@ -67,9 +59,29 @@ theTestData = {
     "boards": [theData0, None]
 }
 
+deviceData = gw4xxx_eeprom.readDeviceData()
+if deviceData['Main']['ProductName'][0:4] == 'GW41':
+    from gw4x00.gw4100 import GW4100API
+    theApi.add_resource(GW4100API, '/gw4100', endpoint='gw4100')
+    mainBoardData_fields = boardData_fields.copy()
+    mainBoardData_fields["MAC"] = fields.List(fields.Integer)
+    mainBoardData_fields["uri"] = fields.Url('gw4100', absolute=True)
+
+info_fields = {
+    "device":       fields.String,
+    "Main":         fields.Nested(mainBoardData_fields),
+    'uri':          fields.Url('gw4xxx_deviceInfo', absolute=True)
+}
+
+if 'Expansion' in deviceData:
+    expansionBoard_fields = boardData_fields.copy()
+    expansionBoard_fields["OverlayName"] = fields.String
+    if deviceData['Expansion']['ProductName'][-2:] == '01':
+        from gw4x01.gw4x01 import GW4x01API
+        theApi.add_resource(GW4x01API, '/gw4x01', endpoint='gw4x01')
+        expansionBoard_fields["uri"] = fields.Url('gw4x01', absolute=True)
+    info_fields["Expansion"] = fields.Nested(expansionBoard_fields)
+
 class DeviceInfoAPI(Resource):
     def get(self):
-        deviceData = gw4xxx_eeprom.readDeviceData()
-        if 'Expansion' in deviceData:
-            info_fields["Expansion"] = fields.Nested(expansionBoard_fields)
         return marshal(deviceData, info_fields), 200
