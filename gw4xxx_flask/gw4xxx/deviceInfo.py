@@ -80,6 +80,11 @@ if 'Expansion' in deviceData:
         from gw4x01.gw4x01 import GW4x01API
         theApi.add_resource(GW4x01API, '/gw4x01', endpoint='gw4x01')
         expansionBoard_fields["uri"] = fields.Url('gw4x01', absolute=True)
+    # todo: correct tester id to 4x90
+    if deviceData['Expansion']['ProductName'][-2:] == '99' or deviceData['Expansion']['ProductName'][-2:] == '90' :
+        from gw4x90.gw4x90 import GW4x90API
+        theApi.add_resource(GW4x90API, '/gw4x90', endpoint='gw4x90')
+        expansionBoard_fields["uri"] = fields.Url('gw4x90', absolute=True)
     info_fields["Expansion"] = fields.Nested(expansionBoard_fields)
 
 class DeviceInfoAPI(Resource):
