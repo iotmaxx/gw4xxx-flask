@@ -15,8 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask_restful import Resource, fields, marshal
+from flask_restful import Resource, fields, marshal, reqparse, inputs, abort
 from gw4xxx_hal.gw4x01 import digitalIOControl
+
 import os
 
 input_fields = {
@@ -29,7 +30,17 @@ isoin_fields = {
     'uri':      fields.Url('gw4x01_isoin', absolute=True)
 }
 
+isoout_fields = {
+    "id":       fields.Integer,
+    "value":    fields.Boolean,
+    'uri':      fields.Url('gw4x01_isoout', absolute=True)
+}
+
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    theIsoOuts = [
+        digitalIOControl.GW4x01IsoOutput(0),
+        digitalIOControl.GW4x01IsoOutput(1),
+    ]
     theIsoIns = [
         digitalIOControl.GW4x01IsoInput(0),
         digitalIOControl.GW4x01IsoInput(1),
@@ -70,7 +81,22 @@ class GW4x01IsoIn(Resource):
         for inp in range(len(theIsoIns)):
             self.values["values"][inp] = theIsoIns[inp].getInput() != 0
 
-
 class GW4x01IsoOut(Resource):
+    def __init__(self):
+        self.putparse = reqparse.RequestParser()
+        self.putparse.add_argument('state', type = inputs.boolean, required = True,
+            help = 'no state provided', location = 'json')
+        super(GW4x01IsoOut, self).__init__()
+
     def get(self, id):
-         return { 'api' : 'GW4x01IsoOut' }
+        if id>=len(theIsoOuts):
+            abort(404)
+#        return { 'isoout':  marshal({ 'value': theIsoOuts[0].getOutput()!=0, 'id': 0 }, isoout_fields) }
+        return { 'isoout':  marshal({ 'value': theIsoOuts[id].getOutput()!=0, 'id': id }, isoout_fields) }
+
+    def put(self, id):
+        if id>=len(theIsoOuts):
+            abort(404)
+        args = self.putparse.parse_args()
+        theIsoOuts[id].setOutput(args['state'])
+        return { 'isoout':  marshal({ 'value': theIsoOuts[id].getOutput()!=0, 'id': id }, isoout_fields) }
