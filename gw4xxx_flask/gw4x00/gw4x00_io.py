@@ -43,7 +43,6 @@ input_fields = {
 #if (not os.environ.get("FLASK_ENV") == "development") or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 #if not (theApplication.debug or os.environ.get("FLASK_ENV") == "development") or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    print("Activate Inputs")
     theInputs = [
         digitalIOControl.GW4100CounterInput(0),
         digitalIOControl.GW4100CounterInput(1),
