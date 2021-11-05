@@ -21,7 +21,12 @@ import os
 
 rtd_fields = {
     "values":   fields.List(fields.Float),
-    'uri':      fields.Url('gw4x01_rtd', absolute=True)
+    'uri':      fields.Url('gw4x01_gw4x01_rtd', absolute=True)
+}
+
+loopIn_fields = {
+    "values":   fields.List(fields.Float),
+    'uri':      fields.Url('gw4x01_currentloopin', absolute=True)
 }
 
 if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
@@ -37,7 +42,11 @@ class GW4x01RTD(Resource):
 
 class GW4x01CurrentLoopIn(Resource):
     def get(self):
-         return { 'api' : 'GW4x01CurrentLoopIn' }
+        numADCs=4
+        values = []
+        for adc in range(numADCs):
+            values.append(theADC.readCurrentLoop(adc))
+        return { 'currentLoopInputs':  marshal({ "values": values }, loopIn_fields) }
 
 class GW4x01CurrentLoopOut(Resource):
     def get(self):
