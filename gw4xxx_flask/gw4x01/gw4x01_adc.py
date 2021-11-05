@@ -16,10 +16,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal
+from gw4xxx_hal.gw4x01 import adcControl
+import os
+
+rtd_fields = {
+    "values":   fields.List(fields.Float),
+    'uri':      fields.Url('gw4x01_rtd', absolute=True)
+}
+
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    theADC = adcControl.GW4x01ADC()
 
 class GW4x01RTD(Resource):
     def get(self):
-         return { 'api' : 'GW4x01RTD' }
+        numADCs=4
+        values = []
+        for adc in range(numADCs):
+            values.append(theADC.readRTDValue(adc))
+        return { 'rtds':  marshal({ "values": values }, rtd_fields) }
 
 class GW4x01CurrentLoopIn(Resource):
     def get(self):
