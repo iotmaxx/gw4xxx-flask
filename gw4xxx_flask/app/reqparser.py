@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+""" 
 from flask_restful import ValidationError
 
 def min_length(min_length):
@@ -30,4 +31,15 @@ def int_in_range(upper, lower=0):
             return s
         raise ValidationError("%i not in range [%i..%i]" % s, lower, upper)
     return validate
+ """
+def float_range(min=0, max=255):
+    def validate(value):
+#        print("validate float range for {}".format(value))
+        theFloat = float(value)
+        if min <= theFloat <= max:
+#            print("float ok")
+            return value
+#        print("float out of range")
+        raise ValueError(f"Value must be in range [{min}, {max}]")
 
+    return validate
