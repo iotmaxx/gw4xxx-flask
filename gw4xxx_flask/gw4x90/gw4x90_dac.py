@@ -16,20 +16,61 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal, reqparse, inputs, abort
-
+from app import theApi, theApplication, reqparser
+from gw4xxx_hal.gw4x90 import analogIOControl
 import os
 
-class GW4x90DAC(Resource):
-    def get(self, chip, channel):
-        return { "GW4x90DAC" : "Chip: {}, Channel: {}".format(chip, channel) }
-#         if id>=len(theIsoOuts):
-#             abort(404)
-# #        return { 'isoout':  marshal({ 'value': theIsoOuts[0].getOutput()!=0, 'id': 0 }, isoout_fields) }
-#         return { 'isoout':  marshal({ 'value': theIsoOuts[id].getOutput()!=0, 'id': id }, isoout_fields) }
+gw4x90dacchannelset_fields = {
+    "chip":             fields.Integer,
+    "channel":          fields.Integer,
+    "uri":              fields.Url('gw4x90_dac_channel', absolute=True),
+}
 
-    # def put(self, id):
-    #     if id>=len(theIsoOuts):
-    #         abort(404)
-    #     args = self.putparse.parse_args()
-    #     theIsoOuts[id].setOutput(args['state'])
-    #     return { 'isoout':  marshal({ 'value': theIsoOuts[id].getOutput()!=0, 'id': id }, isoout_fields) }
+class GW4x90DACChannel(Resource):
+    def __init__(self):
+        self.putparse = reqparse.RequestParser()
+        self.putparse.add_argument('voltage', type = reqparser.float_range(min=0.0, max=24.0), required = True,
+            help = 'invalid voltage: {error_msg}', location = 'json')
+        super(GW4x90DACChannel, self).__init__()
+
+    def get(self, chip, channel):
+        return { 'DACChannel': marshal({'chip':chip, 'channel':channel }, gw4x90dacchannelset_fields)}
+
+    def put(self, chip, channel):
+        args = self.putparse.parse_args()
+        analogIOControl.setVoltage(chip, channel, float(args['voltage']))
+        return { 'DACChannel': marshal({'chip':chip, 'channel':channel }, gw4x90dacchannelset_fields)}
+
+theApi.add_resource(GW4x90DACChannel, '/gw4x90/dac/<int:chip>/<int:channel>', endpoint='gw4x90_dac_channel')
+
+gw4x90dacchannel_fields = {
+    "chip":             fields.Integer,
+    "channel":          fields.Integer,
+    "voltage":          fields.Float,
+    "vref":             fields.Boolean,
+    "gain":             fields.Boolean,
+    "power_state":      fields.Integer,
+    "uri":              fields.Url('gw4x90_dac_channel', absolute=True),
+}
+
+gw4x90dacchips_fields = {
+   "chip":             fields.Integer,
+   "num_channels":     fields.Integer,
+   "channels":         fields.List(fields.Nested(gw4x90dacchannel_fields)),
+}
+
+class GW4x90DACChip(Resource):
+    def get(self, chip):
+        theGW4x90DACChip = { "chip": chip, "num_channels": 4, "channels": [] }
+        theCurrentSettings = analogIOControl.getCurrentSettings(chip)
+        for channel in range(4):
+            theChannel = {
+                "channel": channel,
+                "chip": chip,
+            }
+            theChannel.update(theCurrentSettings[channel])
+            theGW4x90DACChip["channels"].append(theChannel)
+
+        return marshal(theGW4x90DACChip, gw4x90dacchips_fields), 200
+
+
