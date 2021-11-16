@@ -21,7 +21,7 @@ import os
 
 rtd_fields = {
     "values":   fields.List(fields.Float),
-    'uri':      fields.Url('gw4x01_gw4x01_rtd', absolute=True)
+    'uri':      fields.Url('gw4x01_rtd', absolute=True)
 }
 
 loopIn_fields = {
