@@ -19,10 +19,17 @@ from flask_restful import Resource, fields, marshal
 from app import theApi, theApplication
 from gw4x90.gw4x90_dac import GW4x90DACChip#, GW4x90DACChannel
 from gw4x90.gw4x90_currentLoop import GW4x90CurrentLoopOutChannel
+from gw4x90.gw4x90_inputs import GW4x90GPI
 
+theApi.add_resource(GW4x90GPI, '/gw4x90/gpi', endpoint='gw4x90_gpi')
 theApi.add_resource(GW4x90DACChip, '/gw4x90/dac/<int:chip>', endpoint='gw4x90_dac_chip')
 #theApi.add_resource(GW4x90CurrentLoopOut, '/gw4x90/currentloop', endpoint='gw4x90_currentloop')
 theApi.add_resource(GW4x90CurrentLoopOutChannel, '/gw4x90/currentloopout/<int:channel>', endpoint='gw4x90_currentloopoutchannel')
+
+gw4x90gpi_fields = {
+    "num": fields.Integer,
+    "uri":  fields.Url('gw4x90_gpi', absolute=True)
+}
 
 gw4x90currentloopoutchannel_fields = {
     "channel":          fields.Integer,
@@ -46,6 +53,7 @@ gw4x90dac_fields = {
 }
 
 gw4x90_fields = {
+    "GPI":              fields.Nested(gw4x90gpi_fields),
     "DAC":              fields.Nested(gw4x90dac_fields),
     "CurrentLoopOut":   fields.Nested(gw4x90currentloopout_fields),
     "uri":              fields.Url('gw4x90', absolute=True)
@@ -53,6 +61,7 @@ gw4x90_fields = {
 
 with theApplication.test_request_context():
     theGW4x90 = {
+        "GPI":  { "num": 2 },
         "DAC":  { "num_chips": 4, "chips": [] },
         "CurrentLoopOut":  { "num": 4, "channels": [] },
     }
