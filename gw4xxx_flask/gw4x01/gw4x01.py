@@ -39,7 +39,7 @@ gw4x01isoin_fields = {
 
 gw4x01isoout_fields = {
     "id": fields.Integer,
-    "uri": fields.String
+    "uri": fields.Url('gw4x01_isoout', absolute=True)
 }
 
 gw4x01isoouts_fields = {
@@ -76,7 +76,7 @@ with theApplication.test_request_context():
     theGW4x01 = {
         "GPI":  { "num": 4 },
         "IsoIn":  { "num": 4 },
-        "IsoOut": { "num": 2, "isoouts": [ { "id": 0, "uri":  theApi.url_for(GW4x01IsoOut, id=0, _external=True) }, { "id": 1, "uri":  theApi.url_for(GW4x01IsoOut, id=1, _external=True) } ] },
+        "IsoOut": { "num": 2, "isoouts": [ { "id": 0 }, { "id": 1 } ] },
         "RTD":  { "num": 4 },
         "CurrentLoopIn":  { "num": 4 },
         "CurrentLoopOut":  { "num": 1 },
