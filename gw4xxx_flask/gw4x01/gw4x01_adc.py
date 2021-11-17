@@ -15,9 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-from flask_restful import Resource, fields, marshal
+from flask_restful import Resource, fields, marshal, reqparse
 from gw4xxx_hal.gw4x01 import adcControl
+from gw4xxx_hal.gw4xxx.exceptions import ChannelPoweredDownError
+from app import reqparser
 import os
+
+loopOut_fields = {
+    "value":        fields.Float,
+    "powerDown":    fields.Boolean,
+    'uri':          fields.Url('gw4x01_currentloopout', absolute=True)
+}
 
 rtd_fields = {
     "values":   fields.List(fields.Float),
@@ -49,5 +57,29 @@ class GW4x01CurrentLoopIn(Resource):
         return { 'currentLoopInputs':  marshal({ "values": values }, loopIn_fields) }
 
 class GW4x01CurrentLoopOut(Resource):
+    def __init__(self):
+        self.putparse = reqparse.RequestParser()
+        self.putparse.add_argument('current', type = reqparser.float_range(min=0.0, max=20.0), required = True,
+            help = 'invalid current: {error_msg}', location = 'json')
+        super(GW4x01CurrentLoopOut, self).__init__()
+
+    def _getChannelData(self):
+        theData = {}
+        try:
+            theData['value'] = theADC.getOutputCurrent()
+            theData['powerDown'] = False
+        except ChannelPoweredDownError:
+            theData['value'] = 0
+            theData['powerDown'] = True
+        return theData
+
     def get(self):
-         return { 'api' : 'GW4x01CurrentLoopOut' }
+        return { 'currentLoopOutput':  marshal(self._getChannelData(), loopOut_fields) }
+
+    def put(self):
+        args = self.putparse.parse_args()
+        current = float(args['current'])
+        theADC.setOutputCurrent(current)
+        if current == 0:
+            theADC.powerDownChannel()
+        return { 'currentLoopOutput':  marshal(self._getChannelData(), loopOut_fields) }
