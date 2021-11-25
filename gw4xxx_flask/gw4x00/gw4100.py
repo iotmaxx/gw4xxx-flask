@@ -29,7 +29,7 @@ gw4100gpi_fields = {
 
 gw4100gpio_fields = {
     "id": fields.Integer,
-    "uri": fields.String
+    "uri": fields.Url('gw4100_gpio', absolute=True)
 }
 
 gw4100gpios_fields = {
@@ -46,7 +46,7 @@ gw4100_fields = {
 with theApplication.test_request_context():
     theGW4100 = {
         "GPI":  { "num": 4 },
-        "GPIO": { "num": 2, "gpios": [ { "id": 0, "uri":  theApi.url_for(GW4x00GPIO, id=0, _external=True) }, { "id": 1, "uri":  theApi.url_for(GW4x00GPIO, id=1, _external=True) } ] }
+        "GPIO": { "num": 2, "gpios": [ { "id": 0 }, { "id": 1 } ] }
     }
 
 #print(theGW4100)
