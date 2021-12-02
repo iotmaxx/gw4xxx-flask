@@ -2,12 +2,10 @@ from flask_restful import Resource, fields, marshal
 from gw4xxx_hal.gw4xxx import gw4xxx_eeprom
 from datetime import datetime
 from app import theApi
+from app.formats import dateFormat
+from gw4x00.gw4x00_eeprom import MainBoardEEPROM
 
-class MyDateFormat(fields.Raw):
-    def format(self, value):
-        return datetime.fromtimestamp(value).isoformat()
-#        value.strftime('%Y-%m-%d')
-
+theApi.add_resource(MainBoardEEPROM, '/gw4x00/eeprom/<board>', endpoint='gw4x00_eeprom')
 
 boardData_fields = {
     "Product"           : fields.Integer,
@@ -17,12 +15,12 @@ boardData_fields = {
     "Manufacturer"      : fields.Integer,
 #    "TimeOfProduction"  : fields.DateTime(dt_format='iso8601'),
 #    "TimeOfProduction"  : fields.Integer,
-    "TimeOfProduction"  : MyDateFormat,
+    "TimeOfProduction"  : dateFormat,
     "Tester"            : fields.Integer,
     "TestResult"        : fields.Integer,
  #   "TimeOfTest"        : fields.DateTime(dt_format='iso8601'),
 #    "TimeOfTest"        : fields.Integer,
-    "TimeOfTest"        : MyDateFormat,
+    "TimeOfTest"        : dateFormat,
 }
 
 
