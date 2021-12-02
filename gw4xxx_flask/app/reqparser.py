@@ -33,6 +33,8 @@ def int_in_range(upper, lower=0):
     return validate
  """
 import json
+import datetime
+import dateutil.parser as dp
 
 def float_range(min=0, max=255):
     def validate(value):
@@ -55,12 +57,9 @@ def int_range(min=0, max=255):
 
 def version():
     def validate(value):
-        print("validate version {}".format(value))
         theList = json.loads(value)
         if isinstance(theList, list):
-            print("is list")
             if len(theList) == 3:
-                print("is len 3")
                 for idx in range(3):
                     if not isinstance(theList[idx],int):
                         raise ValueError(f"Not int: {idx}")
@@ -71,3 +70,34 @@ def version():
         raise ValueError(f"Version: {value}")
 
     return validate
+
+def MACAddress():
+    def validate(value):
+        print("validate MAC {}".format(value))
+        theList = json.loads(value)
+        if isinstance(theList, list):
+#            print("is list")
+            if len(theList) == 6:
+                print("is len 6")
+                for idx in range(6):
+                    if not isinstance(theList[idx],int):
+                        raise ValueError(f"Not int: {idx}")
+                    if not 0 <= theList[idx] <= 0xff:
+                        raise ValueError(f"Not in range: {idx}")
+                    
+                return theList
+        raise ValueError(f"Version: {value}")
+
+    return validate
+
+
+def timestamp():
+    def validate(value):
+#        print("validate float range for {}".format(value))
+        theDateTime = dp.parse(value)
+        theTimestamp = theDateTime.timestamp()
+        return int(theTimestamp)
+#        raise ValueError(f"Value must be in range [{min}, {max}]")
+
+    return validate
+
