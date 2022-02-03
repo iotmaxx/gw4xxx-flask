@@ -18,10 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask_restful import Resource, fields, marshal
 from app import theApi, theApplication
 from gw4x00.gw4x00_io import GW4x00GPI, GW4x00GPIO
+from gw4x00.gw4x00_w1 import GW4x00W1, GW4x00W1DEV
 #from gw4x00.gw4x00_eeprom2 import GW4x00GPI2, GW4x00GPIO2
 
 theApi.add_resource(GW4x00GPI, '/gw4100/gpi', endpoint='gw4100_gpi')
 theApi.add_resource(GW4x00GPIO, '/gw4100/gpio/<int:id>', endpoint='gw4100_gpio')
+theApi.add_resource(GW4x00W1, '/gw4100/w1', endpoint='gw4100_w1')
+theApi.add_resource(GW4x00W1DEV, '/gw4100/gpio/<int:id>', endpoint='gw4100_w1device')
 
 gw4100gpi_fields = {
     "num": fields.Integer,
@@ -38,16 +41,22 @@ gw4100gpios_fields = {
     "gpios": fields.List(fields.Nested(gw4100gpio_fields))
 }
 
+gw4100w1_fields = {
+    "uri":  fields.Url('gw4100_w1', absolute=True)
+}
+
 gw4100_fields = {
     "GPI": fields.Nested(gw4100gpi_fields),
     "GPIO": fields.Nested(gw4100gpios_fields),
+    "w1": fields.Nested(gw4100w1_fields),
     "uri":  fields.Url('gw4100', absolute=True)
 }
 
 with theApplication.test_request_context():
     theGW4100 = {
         "GPI":  { "num": 4 },
-        "GPIO": { "num": 2, "gpios": [ { "id": 0 }, { "id": 1 } ] }
+        "GPIO": { "num": 2, "gpios": [ { "id": 0 }, { "id": 1 } ] },
+        "w1": {}
     }
 
 #print(theGW4100)
