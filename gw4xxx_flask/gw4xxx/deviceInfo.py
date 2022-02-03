@@ -1,7 +1,7 @@
 from flask_restful import Resource, fields, marshal
-from gw4xxx_hal.gw4xxx import gw4xxx_eeprom
+from gw4xxx_hal.gw4xxx import gw4xxx_eeprom, halVersion
 from datetime import datetime
-from app import theApi
+from app import theApi, apiVersion
 from app.formats import dateFormat
 from gw4x00.gw4x00_eeprom import MainBoardEEPROM
 
@@ -23,7 +23,10 @@ boardData_fields = {
     "TimeOfTest"        : dateFormat,
 }
 
-
+softwareVersionData_fields = {
+    "hal": fields.String,
+    "api": fields.String,
+}
 
 
 theData0 = {
@@ -67,6 +70,7 @@ if deviceData['Main']['ProductName'][0:4] == 'GW41':
 
 info_fields = {
     "device":       fields.String,
+    "Software":     fields.Nested(softwareVersionData_fields),
     "Main":         fields.Nested(mainBoardData_fields),
     'uri':          fields.Url('gw4xxx_deviceInfo', absolute=True)
 }
@@ -84,6 +88,10 @@ if 'Expansion' in deviceData:
         theApi.add_resource(GW4x90API, '/gw4x90', endpoint='gw4x90')
         expansionBoard_fields["uri"] = fields.Url('gw4x90', absolute=True)
     info_fields["Expansion"] = fields.Nested(expansionBoard_fields)
+
+deviceData['Software'] = {}
+deviceData['Software']['hal'] = halVersion
+deviceData['Software']['api'] = apiVersion
 
 class DeviceInfoAPI(Resource):
     def get(self):
