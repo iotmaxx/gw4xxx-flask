@@ -41,7 +41,12 @@ class GW4x00W1(Resource):
             "num": len(self.devices),
             "devices": []
         }
-#        for idx in len(self.devices):
+        for idx in range(len(self.devices)):
+            theDevice = {
+                "id": idx,
+                "w1-id": self.devices[idx]
+            }
+            self.theDevices["devices"].append(theDevice)
 
         super(GW4x00W1, self).__init__()
 

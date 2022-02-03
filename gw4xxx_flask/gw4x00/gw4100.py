@@ -24,7 +24,7 @@ from gw4x00.gw4x00_w1 import GW4x00W1, GW4x00W1DEV
 theApi.add_resource(GW4x00GPI, '/gw4100/gpi', endpoint='gw4100_gpi')
 theApi.add_resource(GW4x00GPIO, '/gw4100/gpio/<int:id>', endpoint='gw4100_gpio')
 theApi.add_resource(GW4x00W1, '/gw4100/w1', endpoint='gw4100_w1')
-theApi.add_resource(GW4x00W1DEV, '/gw4100/gpio/<int:id>', endpoint='gw4100_w1device')
+theApi.add_resource(GW4x00W1DEV, '/gw4100/w1/<int:id>', endpoint='gw4100_w1device')
 
 gw4100gpi_fields = {
     "num": fields.Integer,
