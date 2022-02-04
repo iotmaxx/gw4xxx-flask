@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal, reqparse, inputs
+from app import reqparser
 
 w1DevicesDir = "/sys/bus/w1/devices/"
 w1SlaveNumberFile = w1DevicesDir+"w1_bus_master1/w1_master_slave_count"
@@ -24,6 +25,7 @@ w1TemperatureFile = "temperature"
 w1AlarmsFile = "alarms"
 w1ResolutionFile = "resolution"
 w1ExtPowerFile = "ext_power"
+w1EEPROMCmdFile = "eeprom_cmd"
 
 gw4100w1device_fields = {
     "id": fields.Integer,
@@ -60,9 +62,21 @@ def getAlarms(owid):
     with open(w1DevicesDir+owid+"/"+w1AlarmsFile, "r") as f:
         return f.read().split()
 
+def setAlarms(owid, alarms):
+    with open(w1DevicesDir+owid+"/"+w1AlarmsFile, "w") as f:
+        f.write(f"{alarms[0]} {alarms[1]}")
+
+def saveToEeprom(owid):
+    with open(w1DevicesDir+owid+"/"+w1EEPROMCmdFile, "w") as f:
+        f.write("save\n")
+
 def getResolution(owid):
     with open(w1DevicesDir+owid+"/"+w1ResolutionFile, "r") as f:
         return int(f.read())
+
+def setResolution(owid, resolution):
+    with open(w1DevicesDir+owid+"/"+w1ResolutionFile, "w") as f:
+        return f.write(f"{resolution}")
 
 def getExtPower(owid):
     with open(w1DevicesDir+owid+"/"+w1ExtPowerFile, "r") as f:
@@ -85,12 +99,19 @@ class GW4x00W1(Resource):
         super(GW4x00W1, self).__init__()
 
     def get(self):
-#        self._selfGetInputs()
         return marshal(self.theDevices, gw4100w1devices_fields), 200
 
 class GW4x00W1DEV(Resource):
+    def __init__(self):
+        self.putparse = reqparse.RequestParser()
+        self.putparse.add_argument('alarms', type = list, required = False, location = 'json')
+        self.putparse.add_argument('resolution', type = reqparser.int_range(9,12), required = False, location = 'json')
+        super(GW4x00W1DEV, self).__init__()
+
     def get(self, id):
-#        self._selfGetInputs()
+        return self._getDeviceData(id)
+
+    def _getDeviceData(self, id):
         device_fields = gw4100w1device_fields.copy()
         device_fields['type'] = fields.String
         theDevice  = {
@@ -112,3 +133,15 @@ class GW4x00W1DEV(Resource):
             theDevice['values'] = theTemperatureSensor
 
         return marshal(theDevice, device_fields), 200
+
+    def put(self, id):
+        args = self.putparse.parse_args()
+        device = getDevices()[id]
+        devFamily = device.split("-",1)[0]
+        if devFamily == '28':
+            if args['alarms'] != None:
+                setAlarms(device, args['alarms'])
+            if args['resolution'] != None:
+                setResolution(device, args['resolution'])
+            saveToEeprom(device)
+        return self._getDeviceData(id)
