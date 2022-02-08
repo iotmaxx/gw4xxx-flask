@@ -9,6 +9,3 @@ theApi = Api(theApplication)
 from gw4xxx.deviceInfo import DeviceInfoAPI
 
 theApi.add_resource(DeviceInfoAPI, '/', endpoint='gw4xxx_deviceInfo')
-
-#from app import routes
-

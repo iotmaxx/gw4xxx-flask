@@ -17,6 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal, reqparse, inputs, abort
 from gw4xxx_hal.gw4x01 import digitalIOControl
+from app import theApplication
 
 import os
 
@@ -36,7 +37,8 @@ isoout_fields = {
     'uri':      fields.Url('gw4x01_isoout', absolute=True)
 }
 
-if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+#if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+if (not theApplication.debug) or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or os.environ.get('SERVER_SOFTWARE') is not None:
     theIsoOuts = [
         digitalIOControl.GW4x01IsoOutput(0),
         digitalIOControl.GW4x01IsoOutput(1),

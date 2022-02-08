@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask_restful import Resource, fields, marshal, reqparse
 from gw4xxx_hal.gw4x01 import adcControl
 from gw4xxx_hal.gw4xxx.exceptions import ChannelPoweredDownError
-from app import reqparser
+from app import reqparser, theApplication
 import os
 
 loopOut_fields = {
@@ -37,7 +37,8 @@ loopIn_fields = {
     'uri':      fields.Url('gw4x01_currentloopin', absolute=True)
 }
 
-if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+#if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+if (not theApplication.debug) or os.environ.get("WERKZEUG_RUN_MAIN") == "true" or os.environ.get('SERVER_SOFTWARE') is not None:
     theADC = adcControl.GW4x01ADC()
 
 class GW4x01RTD(Resource):
