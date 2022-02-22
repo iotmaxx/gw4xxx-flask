@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal, reqparse, inputs, abort
 from gw4xxx_hal.gw4x01 import digitalIOControl
-from app import theApplication
+from gw4xxx_flask.app import theApplication
 
 import os
 

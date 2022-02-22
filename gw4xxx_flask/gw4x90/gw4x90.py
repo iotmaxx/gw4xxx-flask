@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal
-from app import theApi, theApplication
-from gw4x90.gw4x90_dac import GW4x90DACChip#, GW4x90DACChannel
-from gw4x90.gw4x90_currentLoop import GW4x90CurrentLoopOutChannel
-from gw4x90.gw4x90_inputs import GW4x90GPI
-from gw4x90.gw4x90_adc import GW4x90ADC
+from gw4xxx_flask.app import theApi, theApplication
+from gw4xxx_flask.gw4x90.gw4x90_dac import GW4x90DACChip#, GW4x90DACChannel
+from gw4xxx_flask.gw4x90.gw4x90_currentLoop import GW4x90CurrentLoopOutChannel
+from gw4xxx_flask.gw4x90.gw4x90_inputs import GW4x90GPI
+from gw4xxx_flask.gw4x90.gw4x90_adc import GW4x90ADC
 
 theApi.add_resource(GW4x90GPI, '/gw4x90/gpi', endpoint='gw4x90_gpi')
 theApi.add_resource(GW4x90ADC, '/gw4x90/adc', endpoint='gw4x90_adc')

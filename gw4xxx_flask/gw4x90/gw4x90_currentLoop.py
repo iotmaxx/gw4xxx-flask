@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from flask_restful import Resource, fields, marshal, reqparse, inputs, abort
 from gw4xxx_hal.gw4x90 import currentLoopControl
 from gw4xxx_hal.gw4xxx.exceptions import ChannelPoweredDownError
-from app import reqparser
+from gw4xxx_flask.app import reqparser
 
 gw4x90currentloopoutchannel_fields = {
     "channel":          fields.Integer,

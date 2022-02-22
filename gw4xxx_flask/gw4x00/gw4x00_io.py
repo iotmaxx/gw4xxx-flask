@@ -19,7 +19,7 @@ from flask_restful import Resource, fields, marshal, reqparse, inputs
 from flask import request
 from gw4xxx_hal.gw4x00 import digitalIOControl
 from gw4xxx_hal.gw4x00.gw4x00_interfaces import gw4x00GpioState
-from app import theApplication
+from gw4xxx_flask.app import theApplication
 import os
 
 gpios = [

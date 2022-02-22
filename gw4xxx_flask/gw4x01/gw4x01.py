@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal
-from app import theApi, theApplication
-from gw4x01.gw4x01_io import GW4x01GPI, GW4x01IsoIn, GW4x01IsoOut
-from gw4x01.gw4x01_adc import GW4x01RTD, GW4x01CurrentLoopIn, GW4x01CurrentLoopOut
+from gw4xxx_flask.app import theApi, theApplication
+from gw4xxx_flask.gw4x01.gw4x01_io import GW4x01GPI, GW4x01IsoIn, GW4x01IsoOut
+from gw4xxx_flask.gw4x01.gw4x01_adc import GW4x01RTD, GW4x01CurrentLoopIn, GW4x01CurrentLoopOut
 
 theApi.add_resource(GW4x01GPI, '/gw4x01/gpi', endpoint='gw4x01_gpi')
 theApi.add_resource(GW4x01IsoIn, '/gw4x01/isoin', endpoint='gw4x01_isoin')

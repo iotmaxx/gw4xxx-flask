@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from flask_restful import Resource, fields, marshal, reqparse, inputs
-from app import reqparser
+from gw4xxx_flask.app import reqparser
 
 w1DevicesDir = "/sys/bus/w1/devices/"
 w1SlaveNumberFile = w1DevicesDir+"w1_bus_master1/w1_master_slave_count"

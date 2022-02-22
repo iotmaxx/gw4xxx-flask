@@ -1,9 +1,9 @@
 from flask_restful import Resource, fields, marshal
 from gw4xxx_hal.gw4xxx import gw4xxx_eeprom, halVersion
 from datetime import datetime
-from app import theApi, apiVersion
-from app.formats import dateFormat
-from gw4x00.gw4x00_eeprom import MainBoardEEPROM
+from gw4xxx_flask.app import theApi, apiVersion
+from gw4xxx_flask.app.formats import dateFormat
+from gw4xxx_flask.gw4x00.gw4x00_eeprom import MainBoardEEPROM
 
 theApi.add_resource(MainBoardEEPROM, '/gw4x00/eeprom/<board>', endpoint='gw4x00_eeprom')
 
@@ -62,7 +62,7 @@ theTestData = {
 
 deviceData = gw4xxx_eeprom.readDeviceData()
 if deviceData['Main']['ProductName'][0:4] == 'GW41':
-    from gw4x00.gw4100 import GW4100API
+    from gw4xxx_flask.gw4x00.gw4100 import GW4100API
     theApi.add_resource(GW4100API, '/gw4100', endpoint='gw4100')
     mainBoardData_fields = boardData_fields.copy()
     mainBoardData_fields["MAC"] = fields.List(fields.Integer)
@@ -79,12 +79,12 @@ if 'Expansion' in deviceData:
     expansionBoard_fields = boardData_fields.copy()
     expansionBoard_fields["OverlayName"] = fields.String
     if deviceData['Expansion']['ProductName'][-2:] == '01':
-        from gw4x01.gw4x01 import GW4x01API
+        from gw4xxx_flask.gw4x01.gw4x01 import GW4x01API
         theApi.add_resource(GW4x01API, '/gw4x01', endpoint='gw4x01')
         expansionBoard_fields["uri"] = fields.Url('gw4x01', absolute=True)
     # todo: correct tester id to 4x90
     if deviceData['Expansion']['ProductName'][-2:] == '99' or deviceData['Expansion']['ProductName'][-2:] == '90' :
-        from gw4x90.gw4x90 import GW4x90API
+        from gw4xxx_flask.gw4x90.gw4x90 import GW4x90API
         theApi.add_resource(GW4x90API, '/gw4x90', endpoint='gw4x90')
         expansionBoard_fields["uri"] = fields.Url('gw4x90', absolute=True)
     info_fields["Expansion"] = fields.Nested(expansionBoard_fields)
