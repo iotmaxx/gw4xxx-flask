@@ -4,6 +4,8 @@ import json
 import os.path
 import pathlib
 
+print("FlaskOnHAL: create config file")
+
 pathlib.Path(defCfg.serviceFile).parents[0].mkdir(parents=True, exist_ok=True)
 
 with open(defCfg.serviceFile,"w") as f:
