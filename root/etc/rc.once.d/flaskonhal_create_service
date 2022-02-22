@@ -1,0 +1,8 @@
+#!/bin/python
+import gw4xxx_flask.default_config as defCfg
+import json
+import os.path
+
+with open(defCfg.serviceFile,"w") as f:
+    f.write(json.dumps(defCfg.defaultService, indent=4))
+        
