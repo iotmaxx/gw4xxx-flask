@@ -1,5 +1,5 @@
 #!/bin/python
-import gw4xxx_flask.default_config as defCfg
+import gw4xxx_flask.app.default_config as defCfg
 import json
 import os.path
 
