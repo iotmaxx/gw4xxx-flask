@@ -5,7 +5,7 @@ serviceFile = "/config/iot_launcher.d/flaskonhal.json"
 
 defaultService = {
     "FlaskOnHAL": {
-        "application": "gunicorn --bind 0.0.0.0:5000 gw4xxx_flask:theApplication".split(), 
+        "application": "gunicorn --bind 0.0.0.0:5000 gw4xxx_flask.app.wsgi:theApplication".split(), 
         "configFile": None, 
         "version":  __version__,
         "description": serviceDescription, 
