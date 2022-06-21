@@ -51,14 +51,14 @@ class MainBoardEEPROM(Resource):
         self.putparse.add_argument('Product', type = reqparser.int_range(min=0, max=0xff), store_missing=False)
         self.putparse.add_argument('ProductName', store_missing=False)
         self.putparse.add_argument('SerialNumber', store_missing=False),
-        self.putparse.add_argument('Version', type = reqparser.version(), store_missing=False)
+        self.putparse.add_argument('Version', type = reqparser.version(), store_missing=False, location='json')
         self.putparse.add_argument('Manufacturer', type = reqparser.int_range(min=0, max=0xff), store_missing=False)
         self.putparse.add_argument('TimeOfProduction', type = reqparser.timestamp(), store_missing=False)
         self.putparse.add_argument('Tester', type = reqparser.int_range(min=0, max=0xff), store_missing=False)
         self.putparse.add_argument('TestResult', type = reqparser.int_range(min=0, max=0xff), store_missing=False)
         self.putparse.add_argument('TimeOfTest', type = reqparser.timestamp(), store_missing=False)
         self.putparse.add_argument('OverlayName', store_missing=False)
-        self.putparse.add_argument('MAC', type = reqparser.MACAddress(), store_missing=False)
+        self.putparse.add_argument('MAC', type = reqparser.MACAddress(), store_missing=False, location='json')
         
         super(MainBoardEEPROM, self).__init__()
 
@@ -72,7 +72,7 @@ class MainBoardEEPROM(Resource):
 
     def put(self, board):
         args = self.putparse.parse_args()
-        print(f"put Board: {board}")
+#        print(f"put Board: {board}")
         if board == 'gw4x00':
             if "MAC" in args:
                 specificSection = {}
