@@ -82,6 +82,10 @@ if 'Expansion' in deviceData:
         from gw4xxx_flask.gw4x01.gw4x01 import GW4x01API
         theApi.add_resource(GW4x01API, '/gw4x01', endpoint='gw4x01')
         expansionBoard_fields["uri"] = fields.Url('gw4x01', absolute=True)
+    if deviceData['Expansion']['ProductName'][-2:] == '04':
+        from gw4xxx_flask.gw4x04.gw4x04 import GW4x04API
+        theApi.add_resource(GW4x04API, '/gw4x04', endpoint='gw4x04')
+        expansionBoard_fields["uri"] = fields.Url('gw4x04', absolute=True)
     # todo: correct tester id to 4x90
     if deviceData['Expansion']['ProductName'][-2:] == '99' or deviceData['Expansion']['ProductName'][-2:] == '90' :
         from gw4xxx_flask.gw4x90.gw4x90 import GW4x90API

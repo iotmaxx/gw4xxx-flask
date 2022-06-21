@@ -67,6 +67,8 @@ class MainBoardEEPROM(Resource):
             return marshal(gw4xxx_eeprom.readDeviceData()['Main'], mainBoardData_fields), 200
         elif board == 'gw4x01':
             return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
+        elif board == 'gw4x04':
+            return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
         else:
             return {'error': 'not found'}, 404
 
@@ -82,6 +84,10 @@ class MainBoardEEPROM(Resource):
                 gw4xxx_eeprom.writeMainBoardEEPROM(args)
             return marshal(gw4xxx_eeprom.readDeviceData()['Main'], mainBoardData_fields), 200
         elif board == 'gw4x01':
+            print("Write to expansion board")
+            gw4xxx_eeprom.writeExpansionBoardEEPROM(args)
+            return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
+        elif board == 'gw4x04':
             print("Write to expansion board")
             gw4xxx_eeprom.writeExpansionBoardEEPROM(args)
             return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
