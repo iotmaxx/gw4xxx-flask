@@ -57,7 +57,7 @@ def int_range(min=0, max=255):
 
 def version():
     def validate(value):
-        theList = json.loads(value)
+        theList = value
         if isinstance(theList, list):
             if len(theList) == 3:
                 for idx in range(3):
@@ -74,7 +74,7 @@ def version():
 def MACAddress():
     def validate(value):
         print("validate MAC {}".format(value))
-        theList = json.loads(value)
+        theList = value
         if isinstance(theList, list):
 #            print("is list")
             if len(theList) == 6:
