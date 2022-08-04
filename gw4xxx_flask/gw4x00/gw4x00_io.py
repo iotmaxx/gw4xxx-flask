@@ -88,7 +88,7 @@ class GW4x00GPI(Resource):
             self.values["values"][inp] = theInputs[inp].getInput() != 0
 
 def gpiostate(gpiostate_str):
-    print(gpiostate_str)
+#    print(gpiostate_str)
     if gpiostate_str in gw4x00GpioState:
         return gpiostate_str
     else:
