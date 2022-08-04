@@ -82,7 +82,11 @@ if 'Expansion' in deviceData:
         from gw4xxx_flask.gw4x01.gw4x01 import GW4x01API
         theApi.add_resource(GW4x01API, '/gw4x01', endpoint='gw4x01')
         expansionBoard_fields["uri"] = fields.Url('gw4x01', absolute=True)
-    if deviceData['Expansion']['ProductName'][-2:] == '04':
+    elif deviceData['Expansion']['ProductName'][-2:] == '02':
+        from gw4xxx_flask.gw4x02.gw4x02 import GW4x02API
+        theApi.add_resource(GW4x02API, '/gw4x02', endpoint='gw4x02')
+        expansionBoard_fields["uri"] = fields.Url('gw4x02', absolute=True)
+    elif deviceData['Expansion']['ProductName'][-2:] == '04':
         from gw4xxx_flask.gw4x04.gw4x04 import GW4x04API
         theApi.add_resource(GW4x04API, '/gw4x04', endpoint='gw4x04')
         expansionBoard_fields["uri"] = fields.Url('gw4x04', absolute=True)
