@@ -20,6 +20,5 @@ from datetime import datetime
 
 class dateFormat(fields.Raw):
     def format(self, value):
-        return datetime.fromtimestamp(value).isoformat()
-#        value.strftime('%Y-%m-%d')
+        return datetime.utcfromtimestamp(value).replace(microsecond=0).isoformat()+'Z'
 
