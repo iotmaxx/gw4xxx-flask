@@ -15,6 +15,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+from flask import request
 from flask_restful import Resource, fields, marshal, reqparse, inputs, abort
 from gw4xxx_flask.app import theApi, theApplication, reqparser
 from gw4xxx_hal.gw4xxx import gw4xxx_eeprom
@@ -37,6 +38,8 @@ boardData_fields = {
 #    "TimeOfTest"        : fields.Integer,
     "TimeOfTest"        : dateFormat,
 }
+
+listOfExpansions = [ 'gw4x01', 'gw4x02', 'gw4x04', 'gw4x99', 'empty' ]
 
 mainBoardData_fields = boardData_fields.copy()
 mainBoardData_fields["MAC"] = fields.List(fields.Integer)
@@ -65,16 +68,14 @@ class MainBoardEEPROM(Resource):
     def get(self, board):
         if board == 'gw4x00':
             return marshal(gw4xxx_eeprom.readDeviceData()['Main'], mainBoardData_fields), 200
-        elif board == 'gw4x01':
-            return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
-        elif board == 'gw4x04':
+        elif board in listOfExpansions:
             return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
         else:
             return {'error': 'not found'}, 404
 
     def put(self, board):
+#        print(f"put Board: {board}, {request.json}")
         args = self.putparse.parse_args()
-#        print(f"put Board: {board}")
         if board == 'gw4x00':
             if "MAC" in args:
                 specificSection = {}
@@ -83,14 +84,12 @@ class MainBoardEEPROM(Resource):
             else:
                 gw4xxx_eeprom.writeMainBoardEEPROM(args)
             return marshal(gw4xxx_eeprom.readDeviceData()['Main'], mainBoardData_fields), 200
-        elif board == 'gw4x01':
-            print("Write to expansion board")
+        elif board in listOfExpansions:
+#            print("Write to expansion board")
             gw4xxx_eeprom.writeExpansionBoardEEPROM(args)
-            return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
-        elif board == 'gw4x04':
-            print("Write to expansion board")
-            gw4xxx_eeprom.writeExpansionBoardEEPROM(args)
-            return marshal(gw4xxx_eeprom.readDeviceData()['Expansion'], expansionBoard_fields), 200
+            theData = gw4xxx_eeprom.readDeviceData()['Expansion']
+#            print(f"flask: {theData}")
+            return marshal(theData, expansionBoard_fields), 200
         else:
             return {'error': 'not found'}, 404
 
