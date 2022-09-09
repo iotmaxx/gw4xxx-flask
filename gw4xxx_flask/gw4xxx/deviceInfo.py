@@ -5,7 +5,8 @@ from gw4xxx_flask.app import theApi, apiVersion
 from gw4xxx_flask.app.formats import dateFormat
 from gw4xxx_flask.gw4x00.gw4x00_eeprom import MainBoardEEPROM
 
-theApi.add_resource(MainBoardEEPROM, '/gw4x00/eeprom/<board>', endpoint='gw4x00_eeprom')
+#theApi.add_resource(MainBoardEEPROM, '/gw4x00/eeprom/<board>', endpoint='gw4x00_eeprom')
+theApi.add_resource(MainBoardEEPROM, '/<board>/eeprom', endpoint='gw4x00_eeprom')
 
 boardData_fields = {
     "Product"           : fields.Integer,
@@ -103,4 +104,5 @@ deviceData['Software']['api'] = apiVersion
 
 class DeviceInfoAPI(Resource):
     def get(self):
+        deviceData.update(gw4xxx_eeprom.readDeviceData())
         return marshal(deviceData, info_fields), 200
