@@ -68,6 +68,14 @@ if deviceData['Main']['ProductName'][0:4] == 'GW41':
     mainBoardData_fields = boardData_fields.copy()
     mainBoardData_fields["MAC"] = fields.List(fields.Integer)
     mainBoardData_fields["uri"] = fields.Url('gw4100', absolute=True)
+elif deviceData['Main']['ProductName'] == 'Unknown':
+    from gw4xxx_flask.gw4x00.gw4100 import GW4100API
+    theApi.add_resource(GW4100API, '/gw4100', endpoint='gw4100')
+    mainBoardData_fields = boardData_fields.copy()
+    mainBoardData_fields["MAC"] = fields.List(fields.Integer)
+    mainBoardData_fields["uri"] = fields.Url('gw4100', absolute=True)
+else:
+    print("should not happen")
 
 info_fields = {
     "device":       fields.String,
