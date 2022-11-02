@@ -1,5 +1,5 @@
 from flask_restful import Resource, fields, marshal
-from gw4xxx_hal.gw4xxx import gw4xxx_eeprom, halVersion
+from gw4xxx_hal.gw4xxx import gw4xxx_eeprom, halVersion, system
 from datetime import datetime
 from gw4xxx_flask.app import theApi, apiVersion
 from gw4xxx_flask.app.formats import dateFormat
@@ -29,6 +29,9 @@ softwareVersionData_fields = {
     "api": fields.String,
 }
 
+systemInfoData_fields = {
+    "imx7_socid": fields.String
+}
 
 theData0 = {
     "Product" : 0,
@@ -80,6 +83,7 @@ else:
 info_fields = {
     "device":       fields.String,
     "Software":     fields.Nested(softwareVersionData_fields),
+    "System":       fields.Nested(systemInfoData_fields),
     "Main":         fields.Nested(mainBoardData_fields),
     'uri':          fields.Url('gw4xxx_deviceInfo', absolute=True)
 }
@@ -109,6 +113,10 @@ if 'Expansion' in deviceData:
 deviceData['Software'] = {}
 deviceData['Software']['hal'] = halVersion
 deviceData['Software']['api'] = apiVersion
+deviceData['System'] = system.getSystemInfo()
+#deviceData['System'] = {}
+#deviceData['System']['socid'] = 'test'
+
 
 class DeviceInfoAPI(Resource):
     def get(self):
