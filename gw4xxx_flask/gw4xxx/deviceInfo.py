@@ -30,7 +30,8 @@ softwareVersionData_fields = {
 }
 
 systemInfoData_fields = {
-    "imx7_socid": fields.String
+    "imx7_socid":   fields.String,
+    "IMEI":         fields.String,
 }
 
 theData0 = {
@@ -113,7 +114,7 @@ if 'Expansion' in deviceData:
 deviceData['Software'] = {}
 deviceData['Software']['hal'] = halVersion
 deviceData['Software']['api'] = apiVersion
-deviceData['System'] = system.getSystemInfo()
+
 #deviceData['System'] = {}
 #deviceData['System']['socid'] = 'test'
 
@@ -121,4 +122,5 @@ deviceData['System'] = system.getSystemInfo()
 class DeviceInfoAPI(Resource):
     def get(self):
         deviceData.update(gw4xxx_eeprom.readDeviceData())
+        deviceData['System'] = system.getSystemInfo()
         return marshal(deviceData, info_fields), 200
