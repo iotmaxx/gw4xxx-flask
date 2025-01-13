@@ -15,12 +15,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import importlib.util
 from flask_restful import Resource, fields, marshal
 from gw4xxx_flask.app import theApi, theApplication
 from gw4xxx_flask.gw4x00.gw4x00_io import GW4x00GPI, GW4x00GPIO
 from gw4xxx_flask.gw4x00.gw4x00_w1 import GW4x00W1, GW4x00W1DEV
 from gw4xxx_flask.gw4x00.gw4x00_rs485 import GW4x00RS485
 #from gw4x00.gw4x00_eeprom2 import GW4x00GPI2, GW4x00GPIO2
+sdhealth_available = importlib.util.find_spec("sdhealth") is not None
 
 theApi.add_resource(GW4x00GPI, '/gw4100/gpi', endpoint='gw4100_gpi')
 theApi.add_resource(GW4x00GPIO, '/gw4100/gpio/<int:id>', endpoint='gw4100_gpio')
@@ -55,16 +57,31 @@ gw4100_fields = {
     "uri":  fields.Url('gw4100', absolute=True)
 }
 
+if sdhealth_available:
+    from gw4xxx_flask.gw4x00.sdhealth import SDCardHealth 
+    theApi.add_resource(SDCardHealth, '/gw4100/sdhealth', endpoint='gw4100_sdhealth')
+    gw4100sdhealth_fields = {
+        "uri":  fields.Url('gw4100_sdhealth', absolute=True)
+    }
+    gw4100_fields["sdhealth"] = fields.Nested(gw4100sdhealth_fields)
+
 with theApplication.test_request_context():
     theGW4100 = {
         "GPI":  { "num": 4 },
         "GPIO": { "num": 2, "gpios": [ { "id": 0 }, { "id": 1 } ] },
         "w1": {}
     }
+#    print("Adding sdhealth")
+    if sdhealth_available:
+#        print("Adding sdhealth success")
+        theGW4100['sdhealth'] = {}
+#        print(theGW4100)
 
 #print(theGW4100)
 
 class GW4100API(Resource):
     def get(self):
+#        print(gw4100_fields)
+#        print(theGW4100)
         return marshal(theGW4100, gw4100_fields), 200
 
